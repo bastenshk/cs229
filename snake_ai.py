@@ -51,9 +51,7 @@ for y in range(row_num):
 
 
 def blit_grid():
-    """
-    画出窗口中的格子
-    """
+    
     # for x in range(1, col_num):
     #     pygame.draw.aaline(screen, (0, 0, 0),
     #                        (left_gap + x * grid_size, top_gap),
@@ -196,7 +194,7 @@ def draw_food((x, y)):
 
 def display_info():
     my_font = pygame.font.SysFont('Comic Sans MS', 25)
-    title = "GAME OVER! final score"+ str(score)
+    title = "Score is"+ str(score)
     game_info = my_font.render(title, True, (0, 0, 0), (57, 120, 158))
     screen.blit(game_info, (width / 2 - 120, top_gap / 2 - 10))
 
