@@ -3,6 +3,7 @@
 
 import pygame
 from pygame.locals import *
+import det_ai
 import random
 import copy
 import sys
@@ -32,7 +33,7 @@ class Snake(object):
 		self.speed = 10
 
 		self.food = (1, 1)
-		self.running = True
+		# self.running = True
 
 		# self.screen.fill((255, 255, 255))
 		# blit_grid()
@@ -47,6 +48,12 @@ class Snake(object):
 
 		# display_info()
 		# draw_food(food)
+
+	def get_snake(self):
+		return self.snake_x, self.snake_y
+
+	def get_food(self):
+		return self.food
 
 
 	def blit_grid(self):
@@ -76,10 +83,10 @@ class Snake(object):
 	def draw_snake(self):
     
 	    for i in range(0, len(self.snake_x)):
-	        rect = pygame.Rect(self.left_gap + self.snake_x[i] * self.grid_size + 1,
+			rect = pygame.Rect(self.left_gap + self.snake_x[i] * self.grid_size + 1,
 	                           self.top_gap + self.snake_y[i] * self.grid_size + 1,
 	                           self.grid_size - 1, self.grid_size - 1)
-	        pygame.draw.rect(self.screen, self.color, rect)
+			pygame.draw.rect(self.screen, self.color, rect)
 
 	    # Draw the head with a different color
 	    rect = pygame.Rect(self.left_gap + self.snake_x[0] * self.grid_size + 1,
@@ -109,29 +116,24 @@ class Snake(object):
 
 
 	def snake_move(self):
-	    global snake_x, snake_y
+		if self.snake_direction == "LEFT":
+			new_x = self.snake_x[0] - 1
+			new_y = self.snake_y[0]
 
-	    if self.snake_direction == "LEFT":
-	        new_x = self.snake_x[0] - 1
-	        new_y = self.snake_y[0]
+		elif self.snake_direction == "RIGHT":
+			new_x = self.snake_x[0] + 1
+			new_y = self.snake_y[0]
+		elif self.snake_direction == "UP":
+			new_x = self.snake_x[0]
+			new_y = self.snake_y[0] - 1
+		elif self.snake_direction == "DOWN":
+			new_x = self.snake_x[0]
+			new_y = self.snake_y[0] + 1
 
-	    elif self.snake_direction == "RIGHT":
-	        new_x = self.snake_x[0] + 1
-	        new_y = self.snake_y[0]
-
-	    elif self.snake_direction == "UP":
-	        new_x = self.snake_x[0]
-	        new_y = self.snake_y[0] - 1
-
-	    elif self.snake_direction == "DOWN":
-	        new_x = self.snake_x[0]
-	        new_y = self.snake_y[0] + 1
-
-	    if new_x < 0 or new_x >= self.col_num or new_y < 0 or new_y >= self.row_num:
-	        self.snake_dead()
-
-	    else:
-	        self.add_snake(new_x, new_y)
+		if new_x < 0 or new_x >= self.col_num or new_y < 0 or new_y >= self.row_num:
+			self.snake_dead()
+		else:
+			self.add_snake(new_x, new_y)
 
 
 	def snake_dead(self):
@@ -174,6 +176,7 @@ class Snake(object):
 		self.blit_grid()
 		self.display_info()
 		self.draw_food(self.food)
+		running = True
 		while True:
 		    for event in pygame.event.get():
 		        if event.type == pygame.QUIT:
@@ -181,9 +184,10 @@ class Snake(object):
 
 		        if event.type == KEYDOWN:
 		            if event.key == K_p:
-		                self.running = not self.running
+		                running = not running
 
 		            if event.key == K_LEFT or event.key == K_a and self.snake_direction != "RIGHT":
+		            	
 		                self.snake_direction = "LEFT"
 
 		            elif event.key == K_RIGHT or event.key == K_d and self.snake_direction != "LEFT":
@@ -195,7 +199,7 @@ class Snake(object):
 		            elif event.key == K_DOWN or event.key == K_s and self.snake_direction != "UP":
 		                self.snake_direction = "DOWN"
 
-		    if not self.running:
+		    if not running:
 		        continue
 
 		    rect = pygame.Rect(self.left_gap + self.snake_x[-1] * self.grid_size + 1, self.top_gap + self.snake_y[-1] * self.grid_size + 1,
@@ -208,18 +212,34 @@ class Snake(object):
 		    self.display_info()
 		    pygame.display.update()
 
-	
-		
+	def AI_control(self):
+		self.screen.fill((255, 255, 255))
+		self.blit_grid()
+		self.display_info()
+		self.draw_food(self.food)
+		running = True
+		while True:
+		    for event in pygame.event.get():
+		        if event.type == pygame.QUIT:
+		            exit()
 
+		        if event.type == KEYDOWN:
+		            if event.key == K_p:
+		                running = not running
 
+		    if not running:
+		        continue
 
+		    self.snake_direction = "RIGHT"
 
+		    rect = pygame.Rect(self.left_gap + self.snake_x[-1] * self.grid_size + 1, self.top_gap + self.snake_y[-1] * self.grid_size + 1,
+		                       self.grid_size - 1, self.grid_size - 1)
+		    pygame.draw.rect(self.screen, (255, 255, 255), rect)
 
-
-
-
-
-
-
+		    self.clock.tick(self.speed)
+		    self.snake_move()
+		    self.draw_snake()
+		    self.display_info()
+		    pygame.display.update()
 
 
